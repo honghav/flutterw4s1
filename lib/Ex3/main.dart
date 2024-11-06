@@ -1,74 +1,100 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(
-  home: Scaffold(
-    appBar: AppBar(
-      title: const Text("Products"),
-      backgroundColor: Colors.pinkAccent,
-    ),backgroundColor: Colors.grey,
-    body: const Padding(
-      padding: EdgeInsets.all(10),
+enum ButtonType { primary, secondary, disabled }
 
-      child: Column(
-        children: [
-          Button(
-            text_button: "Click Me",
-            color_button: Colors.blueAccent,
-            icon: Icon(Icons.check), // Example icon
-          ),
-          Button(
-            text_button: "Time",
-            color_button: Colors.green,
-            icon: Icon(Icons.access_time), // Example icon
-          ),
-          Button(
-            text_button: "Account",
-            color_button: Colors.white54,
-            icon: Icon(Icons.account_circle), // Example icon
-          ),
-        ],
-      ),
-    ),
-  ),
-));
+enum IconPosition { left, right }
 
-class Button extends StatelessWidget {
-  final String text_button;
-  final Color color_button;
-  final Icon icon;
+class CustomButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final IconPosition iconPosition;
+  final ButtonType buttonType;
 
-  const Button({
-    Key? key,
-    required this.text_button,
-    required this.color_button,
+  const CustomButton({
+    super.key,
+    required this.label,
     required this.icon,
-  }) : super(key: key);
+    this.iconPosition = IconPosition.left,
+    this.buttonType = ButtonType.primary,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {},
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.grey, // Text color
-        padding: const EdgeInsets.symmetric(horizontal: 100.0, vertical: 12.0),
-        backgroundColor: color_button,
-        textStyle: const TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        // elevation: 5, // Shadow effect
+    Color backgroundColor;
+    Color textColor;
+
+    switch (buttonType) {
+      case ButtonType.primary:
+        backgroundColor = Colors.blue;
+        textColor = Colors.white;
+        break;
+      case ButtonType.secondary:
+        backgroundColor = Colors.green;
+        textColor = Colors.white;
+        break;
+      case ButtonType.disabled:
+        backgroundColor = Colors.grey;
+        textColor = Colors.black;
+        break;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          icon, // Removed const
+          if (iconPosition == IconPosition.left) Icon(icon, color: textColor),
           const SizedBox(width: 8),
-          Text(text_button),
+          Text(
+            label,
+            style: TextStyle(color: textColor),
+          ),
+          const SizedBox(width: 8),
+          if (iconPosition == IconPosition.right) Icon(icon, color: textColor),
         ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: const Text('Custom Button'),
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomButton(
+              label: 'Submit ',
+              icon: Icons.thumb_up,
+              iconPosition: IconPosition.left,
+              buttonType: ButtonType.primary,
+            ),
+             SizedBox(height: 16),
+            CustomButton(
+              label: 'Time   ',
+              icon: Icons.timer,
+              iconPosition: IconPosition.right,
+              buttonType: ButtonType.secondary,
+            ),
+             SizedBox(height: 16),
+            CustomButton(
+              label: 'Account',
+              icon: Icons.account_tree_outlined,
+              iconPosition: IconPosition.right,
+              buttonType: ButtonType.disabled,
+            ),
+          ],
+        ),
+      ),
+    ),
+  ));
 }
